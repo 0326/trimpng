@@ -36,7 +36,8 @@ gulp.task('css', () => {
 // browserSync server
 gulp.task('server', () => {
   browserSync.init({
-    server: './'
+    server: './',
+    open: false
   })
 
   gulp.watch(['./src/**/*.js'], ['js'])
