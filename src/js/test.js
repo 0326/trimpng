@@ -6,7 +6,7 @@ export default {
   test(canvasEl, ctx) {
     document.getElementById('J_TestImgs').addEventListener('click', (e) => {
       let img = e.target
-      if(img.tagName.toLowerCase() !== 'img') {
+      if (img.tagName.toLowerCase() !== 'img') {
         return
       }
       let originImg = new Image()

@@ -1,4 +1,3 @@
-
 let FILENAME = 'trim.png'
 
 export default {
@@ -7,7 +6,7 @@ export default {
     let $btn = document.getElementById(id)
 
     $btn.addEventListener('click', (e) => {
-      if(isLoad) {
+      if (isLoad) {
         console.log('正在打开...')
         return e.preventDefault()
       } else {
@@ -36,14 +35,14 @@ export default {
       FILENAME = file.name
       let reader = new FileReader()
       reader.readAsDataURL(file)
-      // reader.readAsArrayBuffer(file)
-      // reader.readAsBinaryString(file)
+        // reader.readAsArrayBuffer(file)
+        // reader.readAsBinaryString(file)
       reader.onload = (obj) => {
         callback && callback(obj)
       }
     })
   },
-  initImgDownloadEvent(id ,$canvas) {
+  initImgDownloadEvent(id, $canvas) {
     let $dld = document.getElementById(id)
     $dld.addEventListener('click', (e) => {
       let imgData = $canvas.toDataURL('image/png')

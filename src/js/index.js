@@ -73,4 +73,3 @@ function initCanvas() {
   canvasEl.width = 500
   canvasEl.height = 260
 }
-
