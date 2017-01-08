@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+    <meta charset="UTF-8">
+    <title>FRONTEND DEMO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//cdn.bootcss.com/pure/0.6.1/base-min.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/pure/0.6.1/grids-core-min.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/pure/0.6.1/grids-responsive-min.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/pure/0.6.1/buttons-core-min.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/pure/0.6.1/buttons-min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/build/bundle.css">
+</head>
+<body>
+    <header class="header">
+      <div class="logo"></div>
+    </header>
+    <div class="wrapper">
+        <!--<img class="logo" src="//avatars3.githubusercontent.com/u/8676306?v=3&s=466" alt="logo">-->
+        <div class="btn-wrapper">
+          <div class="pure-button pure-button-primary button-fileupload">
+            <span>上传图片</span>
+            <input id="J_ImgUpload" type="file" accept="image/png">
+          </div>
+          <button id="J_ImgTrim" class="pure-button button-secondary">去除白边</button>
+          <button id="J_ImgCrop" class="pure-button button-secondary">裁剪空白</button>
+          <a id="J_ImgDownload" class="pure-button button-success" href="" download="">下载图片</a>
+          <button id="J_EmptyBtn" class="pure-button button-error">清空内容</button>
+        </div>
+        <div class="canvas-wrapper empty">
+          <canvas id="J_Canvas" width="400" height="260"></canvas>
+          <div class="tips">请上传图片</div>
+        </div>
+    </div>
+    <script src="/build/bundle.js"></script>
+</body>
+</html>
