@@ -683,7 +683,6 @@ for(var collections = ['NodeList', 'DOMTokenList', 'MediaList', 'StyleSheetList'
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
 var FILENAME = 'trim.png';
 
 exports.default = {
@@ -813,37 +812,116 @@ function pixel2arrayData(pixels, imgData) {
 
 /**
  * 空白像素处理算法
+ * step1: 扫描并标记出可疑白点(flag = 1)
+ * step2: 从alpha=0的透明点出发，一旦发现可疑白点直接擦除
  */
 function trimPixels(pixels, options) {
-  var limit = 255 - options.threshold;
-  var distance = options.distance;
-  var abs = Math.abs;
-  var _iteratorNormalCompletion2 = true;
-  var _didIteratorError2 = false;
-  var _iteratorError2 = undefined;
+  var width = options.width;
+  var height = options.height;
+  // 扫描并标记出可疑白点
+  var setCandidatePixels = function setCandidatePixels() {
+    var limit = 255 - options.threshold;
+    var distance = options.distance;
+    var abs = Math.abs;
+    var i = 0;
+    var _iteratorNormalCompletion2 = true;
+    var _didIteratorError2 = false;
+    var _iteratorError2 = undefined;
 
-  try {
-    for (var _iterator2 = (0, _getIterator3.default)(pixels), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-      var p = _step2.value;
-
-      if (p.r > limit && p.g > limit && p.b > limit && abs(p.r - p.g) < distance && abs(p.r - p.b) < distance && abs(p.g - p.b) < distance) {
-        p.a = 0;
-      }
-    }
-  } catch (err) {
-    _didIteratorError2 = true;
-    _iteratorError2 = err;
-  } finally {
     try {
-      if (!_iteratorNormalCompletion2 && _iterator2.return) {
-        _iterator2.return();
+      for (var _iterator2 = (0, _getIterator3.default)(pixels), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+        var p = _step2.value;
+
+        p.index = i++;
+        if (p.r > limit && p.g > limit && p.b > limit && abs(p.r - p.g) < distance && abs(p.r - p.b) < distance && abs(p.g - p.b) < distance) {
+          p.flag = 1;
+        }
       }
+    } catch (err) {
+      _didIteratorError2 = true;
+      _iteratorError2 = err;
     } finally {
-      if (_didIteratorError2) {
-        throw _iteratorError2;
+      try {
+        if (!_iteratorNormalCompletion2 && _iterator2.return) {
+          _iterator2.return();
+        }
+      } finally {
+        if (_didIteratorError2) {
+          throw _iteratorError2;
+        }
       }
     }
-  }
+  };
+  // 获取指定方向相邻点
+  var getDirectionPixel = function getDirectionPixel(direction, p) {
+    var x = p.index / width;
+    var y = p.index % width;
+    var res = null;
+    switch (direction) {
+      case 'left':
+        x > 0 ? res = pixels[p.index - 1] : '';
+        break;
+      case 'top':
+        y > 0 ? res = pixels[p.index - width] : '';
+        break;
+      case 'right':
+        x + 1 < width ? res = pixels[p.index + 1] : '';
+        break;
+      case 'bottom':
+        y + 1 < height ? res = pixels[p.index + width] : '';
+        break;
+      default:
+        alert('impossible!');
+    }
+    return res;
+  };
+  // 根据a=0或者flag=2的参考点递归标记可擦除点
+  var eraseRelativePixels = function eraseRelativePixels(p) {
+    // 凡是被访问的点都是可擦除点
+    p.a = 0;
+    // 获取参考点周围的点
+    var pl = getDirectionPixel('left', p);
+    var pt = getDirectionPixel('top', p);
+    var pr = getDirectionPixel('right', p);
+    var pb = getDirectionPixel('bottom', p);
+
+    pl && (pl.flag === 1 || !pl.a && !pl.flag) ? pl.a = 0 : '';
+    pt && (pt.flag === 1 || !pt.a && !pt.flag) ? pt.a = 0 : '';
+    pr && (pr.flag === 1 || !pr.a && !pr.flag) ? pr.a = 0 : '';
+    pb && (pb.flag === 1 || !pb.a && !pb.flag) ? pb.a = 0 : '';
+  };
+  // 擦除点
+  var setErasePixels = function setErasePixels() {
+    var _iteratorNormalCompletion3 = true;
+    var _didIteratorError3 = false;
+    var _iteratorError3 = undefined;
+
+    try {
+      for (var _iterator3 = (0, _getIterator3.default)(pixels), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+        var p = _step3.value;
+
+        if (p.a === 0) {
+          eraseRelativePixels(p);
+        }
+      }
+    } catch (err) {
+      _didIteratorError3 = true;
+      _iteratorError3 = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion3 && _iterator3.return) {
+          _iterator3.return();
+        }
+      } finally {
+        if (_didIteratorError3) {
+          throw _iteratorError3;
+        }
+      }
+    }
+  };
+
+  setCandidatePixels();
+  setErasePixels();
 
   return pixels;
 }
@@ -859,6 +937,8 @@ exports.default = {
     };
 
     var pixels = array2pixelData(imgData.data);
+    options.width = imgData.width;
+    options.height = imgData.height;
     pixel2arrayData(trimPixels(pixels, options), imgData);
     return imgData;
   },
@@ -892,14 +972,22 @@ exports.default = {
           }
         }
       }
-      return isStartDirct(d) ? (0, _assign2.default)({ x: 0, y: 0 }, pixels[0]) : (0, _assign2.default)({ x: width - 1, y: height - 1 }, pixels[len - 1]);
+      return isStartDirct(d) ? (0, _assign2.default)({
+        x: 0,
+        y: 0
+      }, pixels[0]) : (0, _assign2.default)({
+        x: width - 1,
+        y: height - 1
+      }, pixels[len - 1]);
     };
 
     var pt = getVertex('top');
     var pl = getVertex('left');
     var pb = getVertex('bottom');
     var pr = getVertex('right');
-    var res = { imgData: imgData };
+    var res = {
+      imgData: imgData
+    };
     res.sx = pt.x < pl.x ? pt.x : pl.x; // 需要截取的起始点x坐标
     res.sy = pt.y < pl.y ? pt.y : pl.y; // 需要截取的起始点y坐标
     res.dx = pr.x > pb.x ? pr.x : pb.x; // 需要截取的终点x坐标

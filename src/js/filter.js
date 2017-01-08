@@ -34,21 +34,75 @@ function pixel2arrayData(pixels, imgData) {
 
 /**
  * 空白像素处理算法
+ * step1: 扫描并标记出可疑白点(flag = 1)
+ * step2: 从alpha=0的透明点出发，一旦发现可疑白点直接擦除
  */
 function trimPixels(pixels, options) {
-  let limit = 255 - options.threshold
-  let distance = options.distance
-  let abs = Math.abs
-  for (let p of pixels) {
-    if (p.r > limit &&
-      p.g > limit &&
-      p.b > limit &&
-      abs(p.r - p.g) < distance &&
-      abs(p.r - p.b) < distance &&
-      abs(p.g - p.b) < distance) {
-      p.a = 0
+  let width = options.width
+  let height = options.height
+  // 扫描并标记出可疑白点
+  let setCandidatePixels = () => {
+    let limit = 255 - options.threshold
+    let distance = options.distance
+    let abs = Math.abs
+    let i = 0
+    for (let p of pixels) {
+      p.index = i++
+      if (p.r > limit &&
+        p.g > limit &&
+        p.b > limit &&
+        abs(p.r - p.g) < distance &&
+        abs(p.r - p.b) < distance &&
+        abs(p.g - p.b) < distance) {
+        p.flag = 1
+      }
     }
   }
+  // 获取指定方向相邻点
+  let getDirectionPixel = (direction, p) => {
+    let x = p.index/width
+    let y = p.index%width
+    let res = null
+    switch (direction) {
+      case 'left': x > 0 ? res = pixels[p.index - 1] : ''
+        break
+      case 'top': y > 0 ? res = pixels[p.index - width] : ''
+        break
+      case 'right': x + 1 < width ? res = pixels[p.index + 1] : ''
+        break
+      case 'bottom': y + 1 < height ? res = pixels[p.index + width] : ''
+        break
+      default: alert('impossible!')
+    }
+    return res
+  }
+  // 根据a=0或者flag=2的参考点递归标记可擦除点
+  let eraseRelativePixels = (p) => {
+    // 凡是被访问的点都是可擦除点
+    p.a = 0
+    // 获取参考点周围的点
+    let pl = getDirectionPixel('left', p)
+    let pt = getDirectionPixel('top', p)
+    let pr = getDirectionPixel('right', p)
+    let pb = getDirectionPixel('bottom', p)
+
+    pl && (pl.flag === 1 || !pl.a && !pl.flag) ? pl.a = 0 : ''
+    pt && (pt.flag === 1 || !pt.a && !pt.flag) ? pt.a = 0 : ''
+    pr && (pr.flag === 1 || !pr.a && !pr.flag) ? pr.a = 0 : ''
+    pb && (pb.flag === 1 || !pb.a && !pb.flag) ? pb.a = 0 : ''
+  }
+  // 擦除点
+  let setErasePixels = () => {
+    for(let p of pixels) {
+      if (p.a === 0) {
+        eraseRelativePixels(p)
+      }
+    }
+  }
+
+  setCandidatePixels()
+  setErasePixels()
+
   return pixels
 }
 
@@ -61,6 +115,8 @@ export default {
     distance: 20
   }) {
     let pixels = array2pixelData(imgData.data)
+    options.width = imgData.width
+    options.height = imgData.height
     pixel2arrayData(trimPixels(pixels, options), imgData)
     return imgData
   },
