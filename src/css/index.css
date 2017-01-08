@@ -4,10 +4,14 @@
     --gray-color: #616778
 }
 
+body {
+  /*background: url(http://7xp4vm.com1.z0.glb.clouddn.com/panda.png) repeat;*/
+}
+
 .header {
   height: 63px;
   padding: 10px;
-  background-color: var(--light-gray-color);
+  /*background-color: var(--light-gray-color);*/
 }
 .logo {
     width: 196px;
@@ -17,9 +21,11 @@
 }
 
 .wrapper {
-    margin: 100px auto 0 auto;
+    position: relative;
+    margin: 10px auto 0 auto;
     text-align: center;
     color: var(--main-text-color);
+    z-index: 1;
 }
 
 .canvas-wrapper {
@@ -64,4 +70,13 @@
   height: 100%;
   cursor: pointer;
   z-index: 1;
+}
+
+footer img {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  opacity: .2;
+  z-index: 0;
 }

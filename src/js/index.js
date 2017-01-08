@@ -2,26 +2,27 @@
  * The Entry file
  */
 
-// import 'babel-polyfill'
-import config from './config'
 import file from './file'
 import ImgFilter from './filter'
+import test from './test'
 
 let canvasEl = document.getElementById('J_Canvas')
 let ctx = canvasEl.getContext('2d')
+
+test.test(canvasEl, ctx)
 
 /**
  * 初始化图片上传事件
  */
 file.initImgUploadEvent('J_ImgUpload', (obj) => {
   //  绘制图像到canvas
-  let img = new Image()
-  img.src = obj.target.result
-  img.onload = (e) => {
+  let currImg = new Image()
+  currImg.src = obj.target.result
+  currImg.onload = (e) => {
     canvasEl.parentElement.classList.remove('empty')
-    canvasEl.width = img.width
-    canvasEl.height = img.height
-    ctx.drawImage(img, 0, 0)
+    canvasEl.width = currImg.width
+    canvasEl.height = currImg.height
+    ctx.drawImage(currImg, 0, 0)
   }
 })
 
@@ -53,15 +54,23 @@ document.getElementById('J_ImgTrim').addEventListener('click', (e) => {
  */
 document.getElementById('J_ImgCrop').addEventListener('click', (e) => {
   let imgData = ctx.getImageData(0, 0, canvasEl.width, canvasEl.height)
-  ctx.putImageData(ImgFilter.crop(imgData), 0, 0)
+  let cropObj = ImgFilter.crop(imgData)
 
-  console.log(imgData)
+  let img = new Image()
+  img.src = canvasEl.toDataURL()
+
+  ctx.clearRect(0, 0, canvasEl.width, canvasEl.height)
+  canvasEl.width = cropObj.sw
+  canvasEl.height = cropObj.sh
+  ctx.drawImage(img, cropObj.sx, cropObj.sy, cropObj.sw, cropObj.sh, 0, 0, canvasEl.width, canvasEl.height)
+
+  console.log(cropObj)
 })
 
 function initCanvas() {
   canvasEl.parentElement.classList.add('empty')
   ctx.clearRect(0, 0, canvasEl.width, canvasEl.height)
-  canvasEl.width = 400
+  canvasEl.width = 500
   canvasEl.height = 260
 }
 

@@ -1,0 +1,15 @@
+.test-wrapper ul{
+  margin: 0;
+  padding: 0;
+}
+.test-wrapper li{
+  display: inline-block;
+  height: 80px;
+  width: 100px;
+  border: 1px solid #aaa;
+  background: #fff;
+}
+.test-img {
+  height: 100%;
+  cursor: pointer;
+}
