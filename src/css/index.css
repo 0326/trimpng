@@ -80,3 +80,20 @@ footer img {
   opacity: .2;
   z-index: 0;
 }
+
+.fork-on-github {
+  position: fixed;
+  right: -95px;
+  top: 32px;
+  width: 300px;
+  font: 18px/2 serif;
+  text-align: center;
+  text-decoration: none;
+  z-index: 100;
+  color: #fff;
+  background: #3f4051;
+  text-shadow: 2px -2px 2px #333;
+  box-shadow: 0px -2px 5px #666;
+
+  transform: rotate(40deg);
+}

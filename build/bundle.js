@@ -756,6 +756,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 /**
  * 图像过滤处理算法
+ * @author 0326
  */
 
 /**
@@ -818,110 +819,97 @@ function pixel2arrayData(pixels, imgData) {
 function trimPixels(pixels, options) {
   var width = options.width;
   var height = options.height;
-  // 扫描并标记出可疑白点
-  var setCandidatePixels = function setCandidatePixels() {
-    var limit = 255 - options.threshold;
-    var distance = options.distance;
-    var abs = Math.abs;
-    var i = 0;
-    var _iteratorNormalCompletion2 = true;
-    var _didIteratorError2 = false;
-    var _iteratorError2 = undefined;
-
-    try {
-      for (var _iterator2 = (0, _getIterator3.default)(pixels), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-        var p = _step2.value;
-
-        p.index = i++;
-        if (p.r > limit && p.g > limit && p.b > limit && abs(p.r - p.g) < distance && abs(p.r - p.b) < distance && abs(p.g - p.b) < distance) {
-          p.flag = 1;
-        }
-      }
-    } catch (err) {
-      _didIteratorError2 = true;
-      _iteratorError2 = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion2 && _iterator2.return) {
-          _iterator2.return();
-        }
-      } finally {
-        if (_didIteratorError2) {
-          throw _iteratorError2;
-        }
-      }
-    }
-  };
-  // 获取指定方向相邻点
   var getDirectionPixel = function getDirectionPixel(direction, p) {
     var x = p.index / width;
     var y = p.index % width;
     var res = null;
     switch (direction) {
       case 'left':
-        x > 0 ? res = pixels[p.index - 1] : '';
+        x > 0 ? res = pixels[p.index - 1] : undefined;
         break;
       case 'top':
-        y > 0 ? res = pixels[p.index - width] : '';
+        y > 0 ? res = pixels[p.index - width] : undefined;
         break;
       case 'right':
-        x + 1 < width ? res = pixels[p.index + 1] : '';
+        x + 1 < width ? res = pixels[p.index + 1] : undefined;
         break;
       case 'bottom':
-        y + 1 < height ? res = pixels[p.index + width] : '';
+        y + 1 < height ? res = pixels[p.index + width] : undefined;
         break;
       default:
         alert('impossible!');
     }
     return res;
   };
-  // 根据a=0或者flag=2的参考点递归标记可擦除点
-  var eraseRelativePixels = function eraseRelativePixels(p) {
-    // 凡是被访问的点都是可擦除点
-    p.a = 0;
-    // 获取参考点周围的点
-    var pl = getDirectionPixel('left', p);
-    var pt = getDirectionPixel('top', p);
-    var pr = getDirectionPixel('right', p);
-    var pb = getDirectionPixel('bottom', p);
 
-    pl && (pl.flag === 1 || !pl.a && !pl.flag) ? pl.a = 0 : '';
-    pt && (pt.flag === 1 || !pt.a && !pt.flag) ? pt.a = 0 : '';
-    pr && (pr.flag === 1 || !pr.a && !pr.flag) ? pr.a = 0 : '';
-    pb && (pb.flag === 1 || !pb.a && !pb.flag) ? pb.a = 0 : '';
-  };
-  // 擦除点
-  var setErasePixels = function setErasePixels() {
-    var _iteratorNormalCompletion3 = true;
-    var _didIteratorError3 = false;
-    var _iteratorError3 = undefined;
+  // 扫描并标记出可疑白点
+  var limit = 255 - options.threshold;
+  var distance = options.distance;
+  var abs = Math.abs;
+  var i = 0;
+  var _iteratorNormalCompletion2 = true;
+  var _didIteratorError2 = false;
+  var _iteratorError2 = undefined;
 
-    try {
-      for (var _iterator3 = (0, _getIterator3.default)(pixels), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-        var p = _step3.value;
+  try {
+    for (var _iterator2 = (0, _getIterator3.default)(pixels), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+      var p = _step2.value;
 
-        if (p.a === 0) {
-          eraseRelativePixels(p);
-        }
-      }
-    } catch (err) {
-      _didIteratorError3 = true;
-      _iteratorError3 = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion3 && _iterator3.return) {
-          _iterator3.return();
-        }
-      } finally {
-        if (_didIteratorError3) {
-          throw _iteratorError3;
-        }
+      p.index = i++;
+      if (p.r > limit && p.g > limit && p.b > limit && abs(p.r - p.g) < distance && abs(p.r - p.b) < distance && abs(p.g - p.b) < distance) {
+        p.flag = 1;
       }
     }
-  };
 
-  setCandidatePixels();
-  setErasePixels();
+    // 擦除点
+  } catch (err) {
+    _didIteratorError2 = true;
+    _iteratorError2 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion2 && _iterator2.return) {
+        _iterator2.return();
+      }
+    } finally {
+      if (_didIteratorError2) {
+        throw _iteratorError2;
+      }
+    }
+  }
+
+  var _iteratorNormalCompletion3 = true;
+  var _didIteratorError3 = false;
+  var _iteratorError3 = undefined;
+
+  try {
+    for (var _iterator3 = (0, _getIterator3.default)(pixels), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+      var _p = _step3.value;
+
+      if (_p.a === 0) {
+        var pl = getDirectionPixel('left', _p);
+        var pt = getDirectionPixel('top', _p);
+        var pr = getDirectionPixel('right', _p);
+        var pb = getDirectionPixel('bottom', _p);
+        pl && (pl.flag === 1 || !pl.a && !pl.flag) ? pl.a = 0 : undefined;
+        pt && (pt.flag === 1 || !pt.a && !pt.flag) ? pt.a = 0 : undefined;
+        pr && (pr.flag === 1 || !pr.a && !pr.flag) ? pr.a = 0 : undefined;
+        pb && (pb.flag === 1 || !pb.a && !pb.flag) ? pb.a = 0 : undefined;
+      }
+    }
+  } catch (err) {
+    _didIteratorError3 = true;
+    _iteratorError3 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion3 && _iterator3.return) {
+        _iterator3.return();
+      }
+    } finally {
+      if (_didIteratorError3) {
+        throw _iteratorError3;
+      }
+    }
+  }
 
   return pixels;
 }
@@ -953,15 +941,15 @@ exports.default = {
     var len = pixels.length;
     var getVertex = function getVertex(d) {
       // 获取上下左右最边上的点, d(direction) = top|right|bottom|left
-      var i = void 0,
-          j = void 0,
-          p = void 0;
       var isHorizontal = function isHorizontal(d) {
         return d === 'top' || d === 'bottom';
       };
       var isStartDirct = function isStartDirct(d) {
         return d === 'top' || d === 'left';
       };
+      var i = void 0,
+          j = void 0,
+          p = void 0;
       for (d === 'bottom' ? i = height - 1 : d === 'right' ? i = width - 1 : i = 0; d === 'top' ? i < height : d === 'left' ? i < width : i > 0; isStartDirct(d) ? i++ : i--) {
         for (j = 0; isHorizontal(d) ? j < width : j < height; j++) {
           p = isHorizontal(d) ? pixels[j + i * width] : pixels[i + j * height];

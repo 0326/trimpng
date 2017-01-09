@@ -1,5 +1,6 @@
 /**
  * 图像过滤处理算法
+ * @author 0326
  */
 
 /**
@@ -38,70 +39,56 @@ function pixel2arrayData(pixels, imgData) {
  * step2: 从alpha=0的透明点出发，一旦发现可疑白点直接擦除
  */
 function trimPixels(pixels, options) {
-  let width = options.width
-  let height = options.height
-  // 扫描并标记出可疑白点
-  let setCandidatePixels = () => {
-    let limit = 255 - options.threshold
-    let distance = options.distance
-    let abs = Math.abs
-    let i = 0
-    for (let p of pixels) {
-      p.index = i++
-      if (p.r > limit &&
-        p.g > limit &&
-        p.b > limit &&
-        abs(p.r - p.g) < distance &&
-        abs(p.r - p.b) < distance &&
-        abs(p.g - p.b) < distance) {
-        p.flag = 1
-      }
-    }
-  }
-  // 获取指定方向相邻点
-  let getDirectionPixel = (direction, p) => {
+  const width = options.width
+  const height = options.height
+  const getDirectionPixel = (direction, p) => {
     let x = p.index/width
     let y = p.index%width
     let res = null
     switch (direction) {
-      case 'left': x > 0 ? res = pixels[p.index - 1] : ''
+      case 'left': x > 0 ? res = pixels[p.index - 1] : undefined
         break
-      case 'top': y > 0 ? res = pixels[p.index - width] : ''
+      case 'top': y > 0 ? res = pixels[p.index - width] : undefined
         break
-      case 'right': x + 1 < width ? res = pixels[p.index + 1] : ''
+      case 'right': x + 1 < width ? res = pixels[p.index + 1] : undefined
         break
-      case 'bottom': y + 1 < height ? res = pixels[p.index + width] : ''
+      case 'bottom': y + 1 < height ? res = pixels[p.index + width] : undefined
         break
       default: alert('impossible!')
     }
     return res
   }
-  // 根据a=0或者flag=2的参考点递归标记可擦除点
-  let eraseRelativePixels = (p) => {
-    // 凡是被访问的点都是可擦除点
-    p.a = 0
-    // 获取参考点周围的点
-    let pl = getDirectionPixel('left', p)
-    let pt = getDirectionPixel('top', p)
-    let pr = getDirectionPixel('right', p)
-    let pb = getDirectionPixel('bottom', p)
 
-    pl && (pl.flag === 1 || !pl.a && !pl.flag) ? pl.a = 0 : ''
-    pt && (pt.flag === 1 || !pt.a && !pt.flag) ? pt.a = 0 : ''
-    pr && (pr.flag === 1 || !pr.a && !pr.flag) ? pr.a = 0 : ''
-    pb && (pb.flag === 1 || !pb.a && !pb.flag) ? pb.a = 0 : ''
-  }
-  // 擦除点
-  let setErasePixels = () => {
-    for(let p of pixels) {
-      if (p.a === 0) {
-        eraseRelativePixels(p)
-      }
+  // 扫描并标记出可疑白点
+  const limit = 255 - options.threshold
+  const distance = options.distance
+  const abs = Math.abs
+  let i = 0
+  for (let p of pixels) {
+    p.index = i++
+    if (p.r > limit &&
+      p.g > limit &&
+      p.b > limit &&
+      abs(p.r - p.g) < distance &&
+      abs(p.r - p.b) < distance &&
+      abs(p.g - p.b) < distance) {
+      p.flag = 1
     }
   }
 
-  setCandidatePixels()
-  setErasePixels()
+  // 擦除点
+  for(let p of pixels) {
+    if (p.a === 0) {
+      let pl = getDirectionPixel('left', p)
+      let pt = getDirectionPixel('top', p)
+      let pr = getDirectionPixel('right', p)
+      let pb = getDirectionPixel('bottom', p)
+      pl && (pl.flag === 1 || !pl.a && !pl.flag) ? pl.a = 0 : undefined
+      pt && (pt.flag === 1 || !pt.a && !pt.flag) ? pt.a = 0 : undefined
+      pr && (pr.flag === 1 || !pr.a && !pr.flag) ? pr.a = 0 : undefined
+      pb && (pb.flag === 1 || !pb.a && !pb.flag) ? pb.a = 0 : undefined
+    }
+  }
 
   return pixels
 }
@@ -124,19 +111,19 @@ export default {
    * 图像crop裁切，去掉多余的空白背景，按指定尺寸切边
    */
   crop(imgData) {
-    let width = imgData.width
-    let height = imgData.height
+    const width = imgData.width
+    const height = imgData.height
     let pixels = array2pixelData(imgData.data)
-    let len = pixels.length
-    let getVertex = (d) => {
+    const len = pixels.length
+    const getVertex = (d) => {
       // 获取上下左右最边上的点, d(direction) = top|right|bottom|left
-      let i, j, p
       let isHorizontal = (d) => {
         return d === 'top' || d === 'bottom'
       }
       let isStartDirct = (d) => {
         return d === 'top' || d === 'left'
       }
+      let i, j, p
       for (d === 'bottom' ? i = height - 1 : d === 'right' ? i = width - 1 : i = 0; d === 'top' ? i < height : d === 'left' ? i < width : i > 0; isStartDirct(d) ? i++ : i--) {
         for (j = 0; isHorizontal(d) ? j < width : j < height; j++) {
           p = isHorizontal(d) ? pixels[j + i * width] : pixels[i + j * height]
