@@ -1,4 +1,11 @@
 # trimpng
 trim whitespace and useless pixels for png: <http://quanfeng.tech/trimpng/>
 
-<img src="http://7xp4vm.com1.z0.glb.clouddn.com/1.jpg" width="500" />
+<img src="https://pic4.zhimg.com/v2-678bdd8ac1609620af994808f15577b3.jpg" width="500" />
+
+# dev
+```
+npm install
+npm run dev
+```
+Then open `http://localhost:3000/dev.html` for coding ：）
