@@ -58,13 +58,12 @@ document.getElementById('J_ImgCrop').addEventListener('click', (e) => {
 
   let img = new Image()
   img.src = canvasEl.toDataURL()
-
   ctx.clearRect(0, 0, canvasEl.width, canvasEl.height)
   canvasEl.width = cropObj.sw
   canvasEl.height = cropObj.sh
-  ctx.drawImage(img, cropObj.sx, cropObj.sy, cropObj.sw, cropObj.sh, 0, 0, canvasEl.width, canvasEl.height)
-
-  console.log(cropObj)
+  setTimeout(() => {
+    ctx.drawImage(img, cropObj.sx, cropObj.sy, cropObj.sw, cropObj.sh, 0, 0, canvasEl.width, canvasEl.height)
+  }, 0)
 })
 
 function initCanvas() {
