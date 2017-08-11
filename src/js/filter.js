@@ -117,16 +117,62 @@ export default {
     const len = pixels.length
     const getVertex = (d) => {
       // 获取上下左右最边上的点, d(direction) = top|right|bottom|left
-      let isHorizontal = (d) => {
-        return d === 'top' || d === 'bottom'
-      }
-      let isStartDirct = (d) => {
-        return d === 'top' || d === 'left'
-      }
+      // 是否水平方向扫描
+      let isHorizontal = d => d === 'top' || d === 'bottom'
+      // 是否正向扫描（左边、顶部正向扫描，右边、底部倒序扫描）
+      let isStartDirct = d => d === 'top' || d === 'left'
       let i, j, p
+      // if (d === 'top') {
+      //   for (i = 0; i < height; i++) {
+      //     for(j = 0; j < width; j++) {
+      //       p = pixels[j + i * width]
+      //       if (p.a !== 0) {
+      //         p.x = j
+      //         p.y = i
+      //         return p
+      //       }
+      //     }
+      //   }
+      // }
+      // if (d === 'bottom') {
+      //   for (i = height - 1; i > 0; i--) {
+      //     for(j = 0; j < width; j++) {
+      //       p = pixels[j + i * width]
+      //       if (p.a !== 0) {
+      //         p.x = j
+      //         p.y = i
+      //         return p
+      //       }
+      //     }
+      //   }
+      // }
+      // if (d === 'left') {
+      //   for (i = 0; i < width; i++) {
+      //     for(j = 0; j < height; j++) {
+      //       p = pixels[j * width + i]
+      //       if (p.a !== 0) {
+      //         p.x = i
+      //         p.y = j
+      //         return p
+      //       }
+      //     }
+      //   }
+      // }
+      // if (d === 'right') {
+      //   for (i = width - 1; i > 0; i--) {
+      //     for(j = 0; j < height; j++) {
+      //       p = pixels[j * width + i]
+      //       if (p.a !== 0) {
+      //         p.x = i
+      //         p.y = j
+      //         return p
+      //       }
+      //     }
+      //   }
+      // }
       for (d === 'bottom' ? i = height - 1 : d === 'right' ? i = width - 1 : i = 0; d === 'top' ? i < height : d === 'left' ? i < width : i > 0; isStartDirct(d) ? i++ : i--) {
         for (j = 0; isHorizontal(d) ? j < width : j < height; j++) {
-          p = isHorizontal(d) ? pixels[j + i * width] : pixels[i + j * height]
+          p = isHorizontal(d) ? pixels[j + i * width] : pixels[i + j * width]
           if (p.a !== 0) {
             p.x = isHorizontal(d) ? j : i
             p.y = isHorizontal(d) ? i : j
@@ -143,7 +189,6 @@ export default {
           y: height - 1
         }, pixels[len - 1])
     }
-
     let pt = getVertex('top')
     let pl = getVertex('left')
     let pb = getVertex('bottom')

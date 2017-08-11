@@ -941,18 +941,68 @@ exports.default = {
     var len = pixels.length;
     var getVertex = function getVertex(d) {
       // 获取上下左右最边上的点, d(direction) = top|right|bottom|left
+      // 是否水平方向扫描
       var isHorizontal = function isHorizontal(d) {
         return d === 'top' || d === 'bottom';
       };
+      // 是否正向扫描（左边、顶部正向扫描，右边、底部倒序扫描）
       var isStartDirct = function isStartDirct(d) {
         return d === 'top' || d === 'left';
       };
       var i = void 0,
           j = void 0,
           p = void 0;
+      // if (d === 'top') {
+      //   for (i = 0; i < height; i++) {
+      //     for(j = 0; j < width; j++) {
+      //       p = pixels[j + i * width]
+      //       if (p.a !== 0) {
+      //         p.x = j
+      //         p.y = i
+      //         return p
+      //       }
+      //     }
+      //   }
+      // }
+      // if (d === 'bottom') {
+      //   for (i = height - 1; i > 0; i--) {
+      //     for(j = 0; j < width; j++) {
+      //       p = pixels[j + i * width]
+      //       if (p.a !== 0) {
+      //         p.x = j
+      //         p.y = i
+      //         return p
+      //       }
+      //     }
+      //   }
+      // }
+      // if (d === 'left') {
+      //   for (i = 0; i < width; i++) {
+      //     for(j = 0; j < height; j++) {
+      //       p = pixels[j * width + i]
+      //       if (p.a !== 0) {
+      //         p.x = i
+      //         p.y = j
+      //         return p
+      //       }
+      //     }
+      //   }
+      // }
+      // if (d === 'right') {
+      //   for (i = width - 1; i > 0; i--) {
+      //     for(j = 0; j < height; j++) {
+      //       p = pixels[j * width + i]
+      //       if (p.a !== 0) {
+      //         p.x = i
+      //         p.y = j
+      //         return p
+      //       }
+      //     }
+      //   }
+      // }
       for (d === 'bottom' ? i = height - 1 : d === 'right' ? i = width - 1 : i = 0; d === 'top' ? i < height : d === 'left' ? i < width : i > 0; isStartDirct(d) ? i++ : i--) {
         for (j = 0; isHorizontal(d) ? j < width : j < height; j++) {
-          p = isHorizontal(d) ? pixels[j + i * width] : pixels[i + j * height];
+          p = isHorizontal(d) ? pixels[j + i * width] : pixels[i + j * width];
           if (p.a !== 0) {
             p.x = isHorizontal(d) ? j : i;
             p.y = isHorizontal(d) ? i : j;
@@ -968,7 +1018,6 @@ exports.default = {
         y: height - 1
       }, pixels[len - 1]);
     };
-
     var pt = getVertex('top');
     var pl = getVertex('left');
     var pb = getVertex('bottom');
